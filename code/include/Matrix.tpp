@@ -433,6 +433,19 @@ namespace anpi
   template<typename T,class Alloc>
   std::vector<T> operator*(const Matrix<T,Alloc>& a,
                            const std::vector<T>& b) {
-    assert(false && "Not implemented yet");
+    assert( (a.rows()==b.rows()) && (a.cols()==b.cols()) );
+
+  Matrix<T,Alloc> c(a.rows(),a.cols(),anpi::DoNotInitialize);
+  int n = a.rows();
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
+        c(i,j) = 0;
+        for(int k=0;k<n;k++){
+            c(i,j)=c(i,j)+(a(i,k) * b(k,j));
+        }
+    }
+  }
+  return c;`
+    
   }
 } // namespace ANPI
