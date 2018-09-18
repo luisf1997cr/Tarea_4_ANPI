@@ -44,7 +44,7 @@ void unpackCrout(const Matrix<T> &LU,
   //we make all upper values of L equal 0
   for (int i = 0; i < size; ++i)
   {
-
+    L[i][i] = 1;
     for (int j = i + 1; j < size; ++j)
     {
       L[i][j] = 0;
@@ -53,10 +53,10 @@ void unpackCrout(const Matrix<T> &LU,
   //we make all lower values of U equal 0, and the diagonal equal 1
   for (int i = 0; i < size; ++i)
   {
-    L[i][i] = 1;
+    // U[i][i] = 1;
     for (int j = 0; j < i; ++j)
     {
-      L[i][j] = 0;
+      U[i][j] = 0;
     }
   }
 
@@ -106,6 +106,9 @@ void luCrout(const Matrix<T> &A,
   int n = A.rows();
   permut.resize(n);
 
+  for (int i = 0; i < n; ++i)
+    permut[i] = i;
+
   const T TINY = T(1.0e-40); //A small number.
   int i, imax, j, k;
   T big, temp;
@@ -145,10 +148,17 @@ void luCrout(const Matrix<T> &A,
         LU[imax][j] = LU[k][j];
         LU[k][j] = temp;
       }
-      // d = -d;           //...and change the parity of d.
+      // d = -d;
+      temp = vv[imax];  //...and change the parity of d.
       vv[imax] = vv[k]; //Also interchange the scale factor.
+      vv[k] = temp;
+
+      //do the change
+      temp = permut[k];
+      permut[k] = imax;
+      permut[imax] = temp;
     }
-    permut[k] = imax;
+
     if (LU[k][k] == T(0.0))
       LU[k][k] = TINY;
     // If the pivot element is zero, the matrix is singular (at least to the precision of the
