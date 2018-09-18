@@ -34,7 +34,34 @@ namespace anpi {
                        Matrix<T>& L,
                        Matrix<T>& U) {
 
-    throw anpi::Exception("To be implemented yet");
+   L = LU;
+   U = LU;
+   int n = LU.rows();
+   for(int fila = 0; fila < n; fila++){
+     for(int columna = 0; columna < n; columna++){
+       if (fila == columna){
+           L(fila,columna) = 1;
+       }
+       else if (fila >= columna){
+           L(fila,columna) = LU(fila,columna);
+       }
+       else{
+         L(fila,columna) = 0;
+       }
+     }
+   }
+   for(int fila = 0; fila < n; fila++){
+     for(int columna = 0; columna < n; columna++){
+       if (fila <= columna){
+
+           U(fila,columna) = LU(fila,columna);
+
+       }
+       else{
+           U(fila,columna) = 0;
+       }
+     }
+   }
   }
   
   /**
@@ -61,7 +88,34 @@ namespace anpi {
                    Matrix<T>& LU,
                    std::vector<size_t>& permut) {
 
-    throw anpi::Exception("To be implemented yet");
+    if(A.rows() != A.cols()){
+      throw anpi::Exception("Matrix for Doolittle LU decomposition must be square");
+      return;
+    }else{
+
+      LU =  A;
+      int n = A.rows();
+      for(int k=0 ; k<n ; ++k){
+        for(int j = k; j < n; ++j){
+          //Nos encontramos arriba de la diagonal, se encuentran elementos de U
+          double sum = 0.0;
+          for(int p = 0; p < k; p++){
+            sum = sum + LU(k,p) * LU(p,j);
+          }
+          LU(k,j) = A(k,j) - sum;
+        }
+
+        //Calculo de la diagonal inferior, se hallan los elementos de L
+        for(int i = k+1; i < n; i ++){
+          double sum = 0.0;
+          for(int p = 0; p < k; p++){
+            sum = sum + LU(i,p) * LU(p,k);
+          }
+          LU(i,k) = (A(i,k)-sum)/LU(k,k);
+        }
+      }
+    }
+
   }
 
 }
