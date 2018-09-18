@@ -479,11 +479,6 @@ Matrix<T, Alloc> operator*(const Matrix<T, Alloc> &a,
   int nrows = a.rows(), ncols = b.cols(), matchingSize = a.cols();
   Matrix<T, Alloc> n(nrows, ncols, anpi::DoNotInitialize);
 
-  // for (int i = 0; i < ncols; ++i)
-  // {
-  //   n[0][i] = (a * b.column(i));
-  // }
-
   for (int i = 0; i < nrows; i++)
   {
     for (int j = 0; j < ncols; j++)
