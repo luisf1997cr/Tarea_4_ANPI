@@ -12,7 +12,7 @@
 
 #include "QR.hpp"
 // #include "LUDoolittle.hpp"
-
+#include "MatrixUtils.hpp"
 #include <iostream>
 #include <exception>
 #include <cstdlib>
@@ -71,6 +71,9 @@ void qrTest()
         anpi::printMatrix(mult);
 
         Matrix<T> Ar = Q * R;
+
+        std::cout << "the matrix Ar = QR is:\n";
+        anpi::printMatrix(Ar);
 
         const T eps = 2.2e-5; //std::numeric_limits<T>::epsilon();
 

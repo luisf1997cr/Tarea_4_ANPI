@@ -1,4 +1,3 @@
-
 #include "LUCrout.hpp"
 
 namespace anpi
@@ -7,11 +6,7 @@ namespace anpi
 template <typename T>
 inline void lu(const anpi::Matrix<T> &A, anpi::Matrix<T> &LU, std::vector<size_t> &p)
 {
-
-    try
-    {
-        anpi::luCrout(A, LU, p);
-    }
+    anpi::luCrout(A, LU, p);
 }
 
 /*
@@ -30,11 +25,11 @@ bool solveLU(const anpi::Matrix<T> &A, std::vector<T> &x, std::vector<T> &b)
     std::vector<size_t> p;
     anpi::lu(A, LU, p);
 
-    auto n = A.cols();
+    int n = A.cols();
 
     int i, ii = 0, ip, j;
     T sum;
-    if (b.size() != n || x.size() != n)
+    if (int(b.size()) != n || int(x.size()) != n)
         throw anpi::Exception("solveLU::solve vector bad size");
     for (i = 0; i < n; ++i)
         x[i] = b[i];
@@ -58,6 +53,7 @@ bool solveLU(const anpi::Matrix<T> &A, std::vector<T> &x, std::vector<T> &b)
             sum -= LU[i][j] * x[j];
         x[i] = sum / LU[i][i]; //Store a component of the solution vector X .
     }
+    return true;
 } //end of solveLU
 
 template <typename T>
@@ -65,7 +61,7 @@ void invert(const anpi::Matrix<T> &A, anpi::Matrix<T> &Ai)
 {
     int i, j;
     Ai = A; //copy size of input matrix
-    auto n = A.cols();
+    int n = A.cols();
     //create an I (identity) Matrix
     for (i = 0; i < n; ++i)
     {

@@ -12,6 +12,8 @@
 
 #include "LUCrout.hpp"
 #include "LUDoolittle.hpp"
+#include "LU.hpp"
+#include "MatrixUtils.hpp"
 
 #include <iostream>
 #include <exception>
@@ -76,6 +78,11 @@ void luTest(const std::function<void(const Matrix<T> &,
     unpack(LU, L, U);
     Matrix<T> Ar = L * U;
 
+    std::cout << "the matrix L is:\n";
+    anpi::printMatrix(L);
+    std::cout << "the matrix U is:\n";
+    anpi::printMatrix(U);
+
     const T eps = std::numeric_limits<T>::epsilon();
 
     BOOST_CHECK(Ar.rows() == A.rows());
@@ -89,6 +96,24 @@ void luTest(const std::function<void(const Matrix<T> &,
       }
     }
   }
+} //end luTest
+
+template <typename T>
+void invertTest()
+{
+  anpi::Matrix<T> Ai, exAi, A = {{1, 2, -3}, {4, -5, 6}, {7, -8, 9}};
+  exAi = {{0.50000, 1.00000, -0.50000}, {1.00000, 5.00000, -3.00000}, {0.50000, 3.66667, -2.16667}};
+
+  anpi::invert(A, Ai);
+
+  std::cout << "the matrix A is:\n";
+  anpi::printMatrix(A);
+  std::cout << std::endl;
+  std::cout << "the matrix Ai is:\n";
+  anpi::printMatrix(Ai);
+  std::cout << std::endl;
+
+  BOOST_CHECK(Ai == exAi);
 }
 
 } // namespace test
@@ -110,4 +135,9 @@ BOOST_AUTO_TEST_CASE(Crout)
   anpi::test::luTest<double>(anpi::luCrout<double>, anpi::unpackCrout<double>);
 }
 
+BOOST_AUTO_TEST_CASE(Inversion)
+{
+  anpi::test::invertTest<float>();
+  anpi::test::invertTest<double>();
+}
 BOOST_AUTO_TEST_SUITE_END()
