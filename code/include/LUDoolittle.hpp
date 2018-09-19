@@ -12,13 +12,14 @@
 #include <limits>
 #include <functional>
 #include <algorithm>
+#include <iostream>
 
 #include "Exception.hpp"
 #include "Matrix.hpp"
 
 #ifndef ANPI_LU_DOOLITTLE_HPP
 #define ANPI_LU_DOOLITTLE_HPP
-
+using namespace std;
 namespace anpi {
 
 
@@ -95,8 +96,15 @@ namespace anpi {
 
       LU =  A;
       int n = A.rows();
-      for(int k=0 ; k<n ; ++k){
-        for(int j = k; j < n; ++j){
+      permut.resize(n);
+      int imax = 0;
+      int temp;
+
+      for (int pivot = 0; pivot < n; ++pivot){
+        permut[pivot] = pivot;
+      }
+      for(int k = 0 ;  k < n ; ++k){
+        for(int j = k ; j < n; ++j){
           //Nos encontramos arriba de la diagonal, se encuentran elementos de U
           double sum = 0.0;
           for(int p = 0; p < k; p++){
@@ -104,20 +112,26 @@ namespace anpi {
           }
           LU(k,j) = A(k,j) - sum;
         }
-
         //Calculo de la diagonal inferior, se hallan los elementos de L
-        for(int i = k+1; i < n; i ++){
+        imax = k;
+        for(int i = k + 1; i < n; i ++){
           double sum = 0.0;
-          for(int p = 0; p < k; p++){
+          if(!(abs(A(imax,k))>=abs(A(i,k)))){
+            imax = i;
+          }
+          if(imax != k){
+            temp = permut[imax];
+            permut[imax] = permut[k];
+            permut[k] = temp;
+          }
+          for(int p = 0; p < k; p ++){
             sum = sum + LU(i,p) * LU(p,k);
           }
           LU(i,k) = (A(i,k)-sum)/LU(k,k);
         }
       }
     }
-
   }
-
 }
   
 #endif
