@@ -6,6 +6,7 @@ namespace anpi
 template <typename T>
 inline void lu(const anpi::Matrix<T> &A, anpi::Matrix<T> &LU, std::vector<size_t> &p)
 {
+    //this was benchmarked to be a little faster than Doolittle
     anpi::luCrout(A, LU, p);
 }
 
@@ -20,31 +21,45 @@ inline void lu(const anpi::Matrix<T> &A, anpi::Matrix<T> &LU, std::vector<size_t
 template <typename T>
 bool solveLU(const anpi::Matrix<T> &A, std::vector<T> &x, std::vector<T> &b)
 {
-
-    anpi::Matrix<T> LU;
-    std::vector<size_t> p;
-    anpi::lu(A, LU, p);
-
+    //size n of the Matrix
     int n = A.cols();
+
+    //check for corect inputs
+    if (int(A.rows()) != n) //check if it's square
+        throw anpi::Exception("solveLU::Input Matrix A is not square");
+    if (int(b.size()) != n) // check the solutions are the same amount as the equations
+        throw anpi::Exception("solveLU::solve vector needs to be the same size as the input matrix");
+
+    //the matrix that holds the LU decomposition of A
+    anpi::Matrix<T> LU;
+    //the permutations vector
+    std::vector<size_t> p;
+
+    //decompose A into LU
+    anpi::lu(A, LU, p);
 
     int i, ii = 0, ip, j;
     T sum;
-    if (int(b.size()) != n || int(x.size()) != n)
-        throw anpi::Exception("solveLU::solve vector bad size");
+
+    // for (i = 0; i < n; ++i)
+    //     x[i] = b[i];
+
+    // copy b into x and set size
+
+    x = b;
+
     for (i = 0; i < n; ++i)
-        x[i] = b[i];
-    for (i = 0; i < n; ++i)
-    {              //When ii is set to a positive value, it will become the index of the first nonvanishing element of b. We now
-        ip = p[i]; //do the forward substitution, equation (2.3.6). The only new wrinkle is to unscramble the permutation as we go.
-        sum = x[ip];
-        x[ip] = x[i];
+    {
+        ip = p[i];    //index in the permutation vector
+        sum = x[ip];  //permuted result from b
+        x[ip] = x[i]; //move the permuted value to
         if (ii != 0)
             for (j = ii - 1; j < i; ++j)
                 sum -= LU[i][j] * x[j];
         else if (sum != 0.0) //A nonzero element was encountered, so from now on we will have to do the sums in the loop above.
             ii = i + 1;
 
-        x[i] = sum;
+        x[i] = sum; //set the assigned
     }
     for (i = n - 1; i >= 0; i--)
     { // Now we do the backsubstitution, equation (2.3.7).
@@ -60,16 +75,17 @@ template <typename T>
 void invert(const anpi::Matrix<T> &A, anpi::Matrix<T> &Ai)
 {
     int i, j;
+
     Ai = A; //copy size of input matrix
     int n = A.cols();
     //create an I (identity) Matrix
     for (i = 0; i < n; ++i)
     {
         for (j = 0; j < n; ++j)
-            Ai[i][j] = 0.;
-        Ai[i][i] = 1.;
+            Ai[i][j] = 0;
+        Ai[i][i] = 1;
     }
-
+    //vector to copy each row of the Identity matrix
     std::vector<T> xx(n);
     for (j = 0; j < n; j++)
     { //Copy and solve each column in turn.

@@ -50,6 +50,7 @@ void qrTest()
         // std::vector<size_t> p;
 
         qr(A, Q, R);
+
         std::cout << "the matrix A is:\n";
         anpi::printMatrix(A);
         std::cout << std::endl;
