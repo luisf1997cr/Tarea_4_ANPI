@@ -66,7 +66,7 @@ void qrTest()
         anpi::printMatrix(QT);
 
         std::cout << std::endl;
-        std::cout << "te multiplication of the tranposed Q times Q is:\n";
+        std::cout << "QT * Q is:\n";
         mult = Q * QT;
         anpi::printMatrix(mult);
 
