@@ -93,7 +93,6 @@ namespace anpi {
       throw anpi::Exception("Matrix for Doolittle LU decomposition must be square");
       return;
     }else{
-
       LU =  A;
       int n = A.rows();
       permut.resize(n);
