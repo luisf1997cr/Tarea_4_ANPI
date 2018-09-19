@@ -197,7 +197,7 @@ void transposeMatrix(anpi::Matrix<T> &A)
 
             ///METODO Q = I - 2VV^T
             anpi::Matrix<T> Qtemp(A.rows(), A.cols());
-            ///Metodo producto externo
+            //Verifica y resuelve el produto externo de la matriz
             anpi::Matrix<T> multiVVT(vVector.size(),vVector.size());
             for (int i = 0; i < multiVVT.rows(); i++) {
                 for (int j = 0; j < multiVVT.cols(); j++) {
@@ -205,7 +205,7 @@ void transposeMatrix(anpi::Matrix<T> &A)
                 }
             }
 
-            ///METODO MATRIZ POR ESCALAR
+            //Escala la nueva matriz
             T escalar = T(2);
             for (int j = 0; j < multiVVT.rows(); j++) {
                 for (int i = 0; i < multiVVT.cols(); i++) {
@@ -213,10 +213,10 @@ void transposeMatrix(anpi::Matrix<T> &A)
                 }
             }
             if(k>0){
-            ///agranda matriz
+            //Aunmenta el tama;o de la matriz
                 anpi::Matrix<T> agrandada(multiVVT.rows()+1, multiVVT.cols()+1);      ///VER BIEN DONDE SUMAR EL K
                 for (int i = 0; i < agrandada.cols(); i++) {
-                    for (int j = 0; j < agrandada.rows(); j++) {
+                    for (int j = 0; j < agrgit1andada.rows(); j++) {
                         if(i<k or j<k){
                             if (i == j) {
                                 agrandada[i][j] = -1; /// PARA QUE Q2 SEA POSITIVA, ESTA MAL?
