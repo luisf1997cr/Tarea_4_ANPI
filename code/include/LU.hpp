@@ -35,7 +35,7 @@ bool solveLU(const anpi::Matrix<T> &A, std::vector<T> &x, std::vector<T> &b)
     int i, ii = 0, ip, j;
     T sum;
     if (b.size() != n || x.size() != n)
-        throw anpi::Exception("solveLU::solve vector bad sizes");
+        throw anpi::Exception("solveLU::solve vector bad size");
     for (i = 0; i < n; ++i)
         x[i] = b[i];
     for (i = 0; i < n; ++i)
@@ -58,6 +58,33 @@ bool solveLU(const anpi::Matrix<T> &A, std::vector<T> &x, std::vector<T> &b)
             sum -= LU[i][j] * x[j];
         x[i] = sum / LU[i][i]; //Store a component of the solution vector X .
     }
+} //end of solveLU
+
+template <typename T>
+void invert(const anpi::Matrix<T> &A, anpi::Matrix<T> &Ai)
+{
+    int i, j;
+    Ai = A; //copy size of input matrix
+    auto n = A.cols();
+    //create an I (identity) Matrix
+    for (i = 0; i < n; ++i)
+    {
+        for (j = 0; j < n; ++j)
+            Ai[i][j] = 0.;
+        Ai[i][i] = 1.;
+    }
+
+    std::vector<T> xx(n);
+    for (j = 0; j < n; j++)
+    { //Copy and solve each column in turn.
+        for (i = 0; i < n; i++)
+            xx[i] = Ai[i][j];
+        anpi::solveLU(A, xx, xx);
+        for (i = 0; i < n; i++)
+            Ai[i][j] = xx[i];
+    }
+
+    // solveLU(Ai, Ai);
 }
 
 } // namespace anpi
