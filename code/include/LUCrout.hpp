@@ -53,11 +53,12 @@ void unpackCrout(const Matrix<T> &LU,
   //we make all lower values of U equal 0, and the diagonal equal 1
   for (int i = 0; i < size; ++i)
   {
-    // U[i][i] = 1;
+
     for (int j = 0; j < i; ++j)
     {
       U[i][j] = 0;
     }
+    // U[i][i] = 1;
   }
 
   // throw anpi::Exception("To be implemented yet");
@@ -105,17 +106,17 @@ void luCrout(const Matrix<T> &A,
   LU = A;
   int n = A.rows();
   permut.resize(n);
-
-  for (int i = 0; i < n; ++i)
-    permut[i] = i;
-
-  const T TINY = T(1.0e-40); //A small number.
   int i, imax, j, k;
   T big, temp;
   std::vector<T> vv(n); //vv stores the implicit scaling of each row.
-  // d = 1.0;              //No row interchanges yet.
+
+  //initialize the permutation vector
+  for (int i = 0; i < n; ++i)
+    permut[i] = i;
+
+  //Loop over rows to get the implicit scaling info
   for (i = 0; i < n; i++)
-  { //Loop over rows to get the implicit scaling info
+  {
     big = 0.0;
     for (j = 0; j < n; j++)
       if ((temp = abs(LU[i][j])) > big)
@@ -126,10 +127,12 @@ void luCrout(const Matrix<T> &A,
     //No nonzero largest element.
     vv[i] = T(1.0) / big; //Save the scaling.
   }
+
+  //This is the outermost  loop. K
   for (k = 0; k < n; k++)
-  { //This is the outermost kij loop.
+  {
     big = 0.0;
-    //Initialize for the search for largest pivot element.
+    //Search for largest pivot element.
     for (i = k; i < n; i++)
     {
       temp = vv[i] * abs(LU[i][k]);
@@ -140,49 +143,43 @@ void luCrout(const Matrix<T> &A,
         imax = i;
       }
     }
+
+    //index of the largest element is different from the current index
     if (k != imax)
-    { //Do we need to interchange rows?
+    { //we do pivot
+
+      //interchange the rows in the Matrix
       for (j = 0; j < n; j++)
-      { //Yes, do so...
+      {
         temp = LU[imax][j];
         LU[imax][j] = LU[k][j];
         LU[k][j] = temp;
       }
-      // d = -d;
-      temp = vv[imax];  //...and change the parity of d.
-      vv[imax] = vv[k]; //Also interchange the scale factor.
+      //Interchange the scale factor.
+      temp = vv[imax];
+      vv[imax] = vv[k];
       vv[k] = temp;
 
-      //do the change
+      //Interchange the values in the permutation vector
       temp = permut[k];
       permut[k] = imax;
       permut[imax] = temp;
-    }
+    } //end pivot
 
-    if (LU[k][k] == T(0.0))
-      LU[k][k] = TINY;
-    // If the pivot element is zero, the matrix is singular (at least to the precision of the
-    // algorithm). For some applications on singular matrices, it is desirable to substitute2.3 LU Decomposition and Its Applications
-    // 53
-    // TINY for zero.
+    //calculate the values for the LU matrix
     for (i = k + 1; i < n; i++)
     {
+      if (LU[k][k] == 0)
+        throw anpi::Exception("Singular Matrix, pivot element is zero");
+
       temp = LU[i][k] /= LU[k][k]; // Divide by the pivot element.
-      for (j = k + 1; j < n; j++)  //Innermost loop: reduce remaining submatrix.
+      for (j = k + 1; j < n; j++)
         LU[i][j] -= temp * LU[k][j];
     }
-  }
+
+  } //end of k loop
 } //end LUCrout
 
-// int mxSize = A.rows();
-// //initialize vector holding the pivot, which shows the corresponding place where a row
-// //of the original matrix was transposed
-// std::vector<size_t> pivot;
-// pivot.resize(mxSize);
-// for (int i = 0; i < mxSize; ++i)
-// {
-//   pivot[i] = i;
-// }
 } // namespace anpi
 // namespace anpi
 

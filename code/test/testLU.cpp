@@ -78,10 +78,22 @@ void luTest(const std::function<void(const Matrix<T> &,
     unpack(LU, L, U);
     Matrix<T> Ar = L * U;
 
+    std::cout << "the matrix LU is:\n";
+    anpi::printMatrix(LU);
+    std::cout << std::endl;
+    std::cout << std::endl;
     std::cout << "the matrix L is:\n";
     anpi::printMatrix(L);
+    std::cout << std::endl;
+    std::cout << std::endl;
     std::cout << "the matrix U is:\n";
     anpi::printMatrix(U);
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << "the matrix Ar= L * U is:\n";
+    anpi::printMatrix(Ar);
+    std::cout << std::endl;
+    std::cout << std::endl;
 
     const T eps = std::numeric_limits<T>::epsilon();
 
@@ -96,6 +108,38 @@ void luTest(const std::function<void(const Matrix<T> &,
       }
     }
   }
+  //other decomposition test
+  {
+    std::cout << "-------------------------------------------------------------:\n";
+    std::vector<size_t> p;
+    anpi::Matrix<T> LU, L, U, A = {{0, 2, 0, 1}, {2, 2, 3, 2}, {4, -3, 0, 1.}, {6, 1, -6, -5}}; //{{10, 24, -4, 15}, {30, 24, -34, 28}, {32, -23, 10, 18}, {6, 1, -6, -5}}; //
+    anpi::luCrout(A, LU, p);
+    unpack(LU, L, U);
+    Matrix<T> Ar = L * U;
+
+    std::cout << "the matrix A is:\n";
+    anpi::printMatrix(A);
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << "the matrix Ar= L * U is:\n";
+    anpi::printMatrix(Ar);
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "the matrix LU is:\n";
+    anpi::printMatrix(LU);
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << "the matrix L is:\n";
+    anpi::printMatrix(L);
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << "the matrix U is:\n";
+    anpi::printMatrix(U);
+    std::cout << std::endl;
+    std::cout << std::endl;
+  }
+
 } //end luTest
 
 template <typename T>
@@ -121,6 +165,41 @@ void invertTest()
   BOOST_CHECK(Ai == exAi);
 }
 
+template <typename T>
+void solverTest()
+{
+  anpi::Matrix<T> LU, A = {{0, 2, 0, 1}, {2, 2, 3, 2}, {4, -3, 0, 1.}, {6, 1, -6, -5}};
+  std::vector<T> br, results, b = {0, -2, -7, 6}, exResults = {-0.5, 1.00000, 0.33333, -2.00000};
+
+  // std::cout << "the matrix LU is:\n";
+  // anpi::printMatrix(LU);
+  // std::cout << std::endl;
+  // std::cout << std::endl;
+  // std::cout << "El vector de permutacion es: \n";
+  // for (size_t i = 0; i < p.size(); ++i)
+  //   std::cout << p[i] << "  ";
+  // std::cout << std::endl;
+
+  anpi::solveLU(A, results, b);
+  br = A * results;
+
+  std::cout << "El vector resultado X es: \n";
+  for (size_t i = 0; i < results.size(); ++i)
+    std::cout << results[i] << "  ";
+  std::cout << std::endl;
+
+  std::cout << "El vector b es: \n";
+  for (size_t i = 0; i < results.size(); ++i)
+    std::cout << b[i] << "  ";
+  std::cout << std::endl;
+  std::cout << "El vector A * x = b es: \n";
+  for (size_t i = 0; i < results.size(); ++i)
+    std::cout << br[i] << "  ";
+  std::cout << std::endl;
+
+    BOOST_CHECK(results == exResults);
+}
+
 } // namespace test
 } // namespace anpi
 
@@ -144,5 +223,11 @@ BOOST_AUTO_TEST_CASE(Inversion)
 {
   anpi::test::invertTest<float>();
   anpi::test::invertTest<double>();
+}
+
+BOOST_AUTO_TEST_CASE(SolveLU)
+{
+  anpi::test::solverTest<float>();
+  anpi::test::solverTest<double>();
 }
 BOOST_AUTO_TEST_SUITE_END()

@@ -34,6 +34,8 @@ bool solveLU(const anpi::Matrix<T> &A, std::vector<T> &x, std::vector<T> &b)
     anpi::Matrix<T> LU;
     //the permutations vector
     std::vector<size_t> p;
+    // copy b into x and set size
+    x = b;
 
     //decompose A into LU
     anpi::lu(A, LU, p);
@@ -41,28 +43,27 @@ bool solveLU(const anpi::Matrix<T> &A, std::vector<T> &x, std::vector<T> &b)
     int i, ii = 0, ip, j;
     T sum;
 
-    // for (i = 0; i < n; ++i)
-    //     x[i] = b[i];
-
-    // copy b into x and set size
-
-    x = b;
-
+    //we permute the b vector to match the permuted A
     for (i = 0; i < n; ++i)
     {
         ip = p[i];    //index in the permutation vector
         sum = x[ip];  //permuted result from b
-        x[ip] = x[i]; //move the permuted value to
-        if (ii != 0)
-            for (j = ii - 1; j < i; ++j)
-                sum -= LU[i][j] * x[j];
-        else if (sum != 0.0) //A nonzero element was encountered, so from now on we will have to do the sums in the loop above.
-            ii = i + 1;
+        x[ip] = x[i]; //move the current value to the permuted position
+        x[i] = sum;
+    }
 
+    //forward substitution
+    for (i = 0; i < n; ++i)
+    {
+        sum = x[i];
+        for (j = 0; j < i; ++j)
+            sum -= LU[i][j] * x[j];
         x[i] = sum; //set the assigned
     }
-    for (i = n - 1; i >= 0; i--)
-    { // Now we do the backsubstitution, equation (2.3.7).
+
+    // back substitution
+    for (i = n - 1; i >= 0; --i)
+    {
         sum = x[i];
         for (j = i + 1; j < n; ++j)
             sum -= LU[i][j] * x[j];

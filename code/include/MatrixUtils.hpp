@@ -13,7 +13,7 @@ void printMatrix(anpi::Matrix<T> &A)
     {
         for (int j = 0; j < n; ++j)
         {
-            std::cout << A[i][j] << " ";
+            std::cout << A[i][j] << "  ";
         }
         std::cout << std::endl;
     }
