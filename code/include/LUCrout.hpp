@@ -139,7 +139,6 @@ void luCrout(const Matrix<T> &A,
       if (temp > big) //Is the figure of merit for the pivot better than the best so far?
       {
         big = temp;
-
         imax = i;
       }
     }

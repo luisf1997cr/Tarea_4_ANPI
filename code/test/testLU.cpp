@@ -145,13 +145,13 @@ void luTest(const std::function<void(const Matrix<T> &,
 template <typename T>
 void invertTest()
 {
-  anpi::Matrix<T> Ai, exAi, A = {{1, 2, -3}, {4, -5, 6}, {7, -8, 9}}; //A = {{4, -2}, {10, -3}}; //
-  exAi = {{0.50000, 1.00000, -0.50000},
-          {1.00000, 5.00000, -3.00000},
-          {0.50000, 3.66667, -2.16667}};
+  anpi::Matrix<T> Ai, exAi, A = {{4, -2}, {10, -3}}; //{{1, 2, -3}, {4, -5, 6}, {7, -8, 9}};
+  // exAi = {{0.50000, 1.00000, -0.50000},
+  //         {1.00000, 5.00000, -3.00000},
+  //         {0.50000, 3.66667, -2.16667}};
 
   //simple test
-  // exAi = {{-0.375, 0.25}, {-1.25, 0.5}};
+  exAi = {{-0.375, 0.25}, {-1.25, 0.5}};
 
   anpi::invert(A, Ai);
 
@@ -197,7 +197,7 @@ void solverTest()
     std::cout << br[i] << "  ";
   std::cout << std::endl;
 
-    BOOST_CHECK(results == exResults);
+  BOOST_CHECK(results == exResults);
 }
 
 } // namespace test

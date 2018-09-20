@@ -7,7 +7,7 @@ Jorge Aguero
 
 README
 
-In this task we implemented three methods of matrix decomposition.
+In this task we implemented three methods for matrix decomposition.
 1.LU Crout
 2.LU Doolitlle
 3 QR
@@ -22,7 +22,7 @@ This project can also be found at GitHub in:
 https://github.com/luisf1997cr/Tarea_4_ANPI
 
 -----------------------------------------------------------------------------------------------------------------------
-------------------------------------------- RUN INSTRUCTION ----------------------------------------------
+------------------------------------------- RUN INSTRUCTIONS ----------------------------------------------
 -----------------------------------------------------------------------------------------------------------
 
 Unzip the project, open a terminal and change your working directory to the unzipped folder
@@ -57,7 +57,7 @@ If you can, running all test of task you can use
 
 > ./tester 
 
-Or you can see all unit test using
+Or you can see all unit tests available using
 
 > ./tester --list_content
 
@@ -67,7 +67,11 @@ Examples of unit test
 
 > ./tester -t Matrix
 
-> ./tester -t LU
+> ./tester -t LU/Crout
+
+You can run the benchmarks used to select the LU algorithm by running
+
+>./benchmarks -t LU
 
 ________________________________________________________________________________________________________________________
 ____________________________________________________ Dependencies _______________________________________
