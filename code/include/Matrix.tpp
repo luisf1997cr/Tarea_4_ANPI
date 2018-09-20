@@ -466,6 +466,22 @@ Matrix<T, Alloc> operator-(const Matrix<T, Alloc> &a,
 }
 
 // TODO: Solucionar en la Tarea 04 (Punto 1)
+
+
+template<typename T,class Alloc>
+Matrix<T,Alloc> &Matrix<T,Alloc>::operator*=(const Matrix<T,Alloc>& other) 
+{
+
+  if (this->cols() == other.rows()) {
+    ::anpi::aimpl::product(*this, other);
+    return *this;
+  }
+  else {
+    throw anpi::Exception("Invalid multiplication operands size");
+  }
+}
+
+
 template <typename T, class Alloc>
 Matrix<T, Alloc> operator*(const Matrix<T, Alloc> &a,
                            const Matrix<T, Alloc> &b)
@@ -515,10 +531,8 @@ std::vector<T> operator*(const Matrix<T, Alloc> &a,
     T currentValue = T(0);
     for (int j = 0; j < vecsize; ++j)
     {
-
       currentValue += a[i][j] * b[j];
     }
-
     result[i] = currentValue;
   }
 

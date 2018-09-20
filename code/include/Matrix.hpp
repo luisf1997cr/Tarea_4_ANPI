@@ -321,6 +321,9 @@ public:
   /// Subtract another matrix to this one, and leave the result in here
   Matrix &operator-=(const Matrix &other);
 
+  /// multiplica another matrix to this one, and leave the result in here
+  Matrix &operator*=(const Matrix &other);
+
   //@}
 
 private:
@@ -353,6 +356,7 @@ Matrix<T, Alloc> operator-(const Matrix<T, Alloc> &a,
                            const Matrix<T, Alloc> &b);
 
 // Tarea 4
+
 template <typename T, class Alloc>
 Matrix<T, Alloc> operator*(const Matrix<T, Alloc> &a,
                            const Matrix<T, Alloc> &b);

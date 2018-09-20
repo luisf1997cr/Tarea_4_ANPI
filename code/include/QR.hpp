@@ -29,6 +29,9 @@ void qr(const anpi::Matrix<T> &A, anpi::Matrix<T> &Q, anpi::Matrix<T> &R)
     {
         throw anpi::Exception("Matrix for QR decomposition must be square");
     }
+
+
+    /*
     int n = A.cols(); //size of matrix
 
     // initialize matrices
@@ -113,8 +116,9 @@ void qr(const anpi::Matrix<T> &A, anpi::Matrix<T> &Q, anpi::Matrix<T> &R)
 
 } //end QR decomposition
 
+*/
+
 //begin LUIS
-/*
     size_t k = 0; //Variable while dicta cada ciclo del qr
     anpi::Matrix<T> Atemp = A;
     while (k < 2)
@@ -258,9 +262,9 @@ void qr(const anpi::Matrix<T> &A, anpi::Matrix<T> &Q, anpi::Matrix<T> &R)
     }
 
     R = transpuestaQ * A;
+    //LimpiarMatriz(Q,R);
 
-    */
-// } // namespace anpi
+} // namespace anpi
 
 template <typename T>
 bool solveQR(const anpi::Matrix<T> &A, std::vector<T> &x, const std::vector<T> &b)
@@ -300,6 +304,33 @@ bool solveQR(const anpi::Matrix<T> &A, std::vector<T> &x, const std::vector<T> &
 
     return 1;
 }
+
+    template<typename T>
+    void LimpiarMatriz (anpi::Matrix <T>&Q, anpi::Matrix <T>&R){
+        int Qcols = Q.cols();
+        int Qrows = Q.rows();
+        int Rcols = R.cols();
+        int Rrows = R.rows();
+        ///Limpia matriz Q
+        for(int i =0; i < Qcols; i++){
+            for(int j =0; j < Qrows; j++){
+                if(Q[i][j] <= 0.1e-6){
+                    Q[i][j] = T(0);
+                }
+            }
+        }
+
+        ///Limpia matriz R
+        for(int i =0; i < Rcols; i++){
+            for(int j =0; j < Rrows; j++){
+                if(R[i][j] < 0.1e-6){
+                    R[i][j] = T(0);
+                }
+            }
+        }
+    }
+
+
 } // namespace anpi
 
 #endif

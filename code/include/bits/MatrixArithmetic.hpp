@@ -114,6 +114,8 @@ namespace anpi
       }
     }
 
+     
+
   } // namespace fallback
 
 
@@ -397,6 +399,95 @@ namespace anpi
 
       ::anpi::fallback::subtract(a,b);
     }
+
+    /*
+     * Product
+     */
+
+      // Fall back implementations
+
+      // In-copy implementation c = a*b
+      template<typename T,class Alloc>
+      inline void product(const Matrix<T,Alloc>& a,
+                           const std::vector<T>& b,
+                          Matrix<T,Alloc>& c) {
+
+          assert((a.cols() == b.size()));
+          c.allocate(a.rows(), 1);
+          for (int i = 0; i < a.rows(); i++) {
+              T data = 0;
+              for (int j = 0; j < b.size(); j++) {
+                  data = data + a[i][j] * b[j];
+              }
+              c[i][0]=data;
+          }
+      }
+      // In-place implementation a = a*b
+      template<typename T,class Alloc>
+      inline void product(Matrix<T,Alloc>& a,
+                           const std::vector<T>& b) {
+
+          assert((a.cols() == b.size()));
+          for (int i = 0; i < a.rows(); i++) {
+              T data = 0;
+              for (int j = 0; j < b.size(); j++) {
+                  data = data + a[i][j] * b[j];
+                  //std::cout << "con c "<<data << std::endl;
+              }
+              a[i][0]=data;
+          }
+
+
+      }
+
+      // In-place implementation a = a*b
+      template<typename T,class Alloc>
+      inline void product(Matrix<T,Alloc>& a,
+                          const Matrix<T,Alloc>& b) {
+
+          Matrix<T,Alloc> c(a.rows(),b.cols());
+          c.allocate(a.rows(),b.cols());
+
+          int aRows = a.rows();
+          int aCols = a.cols();
+          int bCols = b.cols();
+
+          for(int row = 0; row < aRows; row++) {
+              for(int column = 0; column < bCols; column++) {
+                  for(int index = 0; index < aCols; index++) {
+                      c[row][column] += a[row][index] * b[index][column];
+                  }
+              }
+          }
+
+          a=std::move(c);
+
+      }
+
+
+      // In-copy implementation c = a * b
+      template<typename T,class Alloc>
+      inline void product(const Matrix<T,Alloc>& a,
+                          const Matrix<T,Alloc>& b,
+                          Matrix<T,Alloc>& c) {
+
+          c.allocate(a.rows(),b.cols());
+
+          int aRows = a.rows();
+          int aCols = a.cols();
+          int bCols = b.cols();
+
+          for(int row = 0; row < aRows; row++) {
+              for(int column = 0; column < bCols; column++) {
+                  for(int index = 0; index < aCols; index++) {
+                      c[row][column] += a[row][index] * b[index][column];
+                  }
+              }
+          }
+
+      }
+
+      
   } // namespace simd
 
 
