@@ -12,6 +12,7 @@
 
 #include "LUCrout.hpp"
 #include "LUDoolittle.hpp"
+// #include "Solver.hpp"
 #include "LU.hpp"
 #include "MatrixUtils.hpp"
 
@@ -117,16 +118,31 @@ void luTest(const std::function<void(const Matrix<T> &,
     unpack(LU, L, U);
     Matrix<T> Ar = L * U;
 
-    std::cout << "the matrix A is:\n";
-    anpi::printMatrix(A);
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << "the matrix Ar= L * U is:\n";
+    std::cout << "BEFORE PERMUTE: the matrix Ar= L * U is:\n";
     anpi::printMatrix(Ar);
     std::cout << std::endl;
     std::cout << std::endl;
 
-    std::cout << "the matrix LU is:\n";
+    //permutation
+    anpi::permuteMatrix(Ar, p);
+
+    std::cout
+        << "the matrix A is:\n";
+    anpi::printMatrix(A);
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "El vector de permutacion es: \n";
+    for (size_t i = 0; i < p.size(); ++i)
+      std::cout << p[i] << "  ";
+    std::cout << std::endl;
+
+    std::cout << "AFTER PERMUTE: the matrix Ar= L * U is:\n";
+    anpi::printMatrix(Ar);
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    std::cout << " the matrix LU is:\n";
     anpi::printMatrix(LU);
     std::cout << std::endl;
     std::cout << std::endl;
@@ -168,20 +184,31 @@ void invertTest()
 template <typename T>
 void solverTest()
 {
-  anpi::Matrix<T> LU, A = {{0, 2, 0, 1}, {2, 2, 3, 2}, {4, -3, 0, 1.}, {6, 1, -6, -5}};
-  std::vector<T> br, results, b = {0, -2, -7, 6}, exResults = {-0.5, 1.00000, 0.33333, -2.00000};
+  anpi::Matrix<T> LU, A = {{0, 2, 0, 1}, {2, 2, 3, 2}, {4, -3, 0, 1.}, {6, 1, -6, -5}}, r = {{1, -5}, {2, -2}}, Z = {{10, 2, 0, 1}, {2, 5, 3, 3}, {4, -3, 0, 1.}, {6, 1, -4, -5}}; //r = {{1, -5}, {2, -2}};
+  std::vector<T> br, results, b = {0, -2, -7, 6}, y = {-2, 9}, exResults = {-0.5, 1.00000, 0.33333, -2.00000};                                                                     //{-3.5, -2.5}; //{-0.5, 1.00000, 0.33333, -2.00000},
+  std::vector<size_t> p;
 
-  // std::cout << "the matrix LU is:\n";
-  // anpi::printMatrix(LU);
-  // std::cout << std::endl;
-  // std::cout << std::endl;
-  // std::cout << "El vector de permutacion es: \n";
-  // for (size_t i = 0; i < p.size(); ++i)
-  //   std::cout << p[i] << "  ";
-  // std::cout << std::endl;
+  // check LU
+  // anpi::luCrout<T>(r, LU, p);
+  anpi::luCrout<T>(Z, LU, p);
 
-  anpi::solveLU(A, results, b);
-  br = A * results;
+  std::cout << "the matrix LU is:\n";
+  anpi::printMatrix(LU);
+  std::cout << std::endl;
+  std::cout << std::endl;
+  std::cout << "El vector de permutacion es: \n";
+  for (size_t i = 0; i < p.size(); ++i)
+    std::cout << p[i] << "  ";
+  std::cout << std::endl;
+
+  // anpi::solveLU(A, results, b);
+  // br = A * results;
+
+  // anpi::solveLU(r, results, y);
+  // br = r * results;
+
+  anpi::solveLU(Z, results, b);
+  br = Z * results;
 
   std::cout << "El vector resultado X es: \n";
   for (size_t i = 0; i < results.size(); ++i)
@@ -192,7 +219,7 @@ void solverTest()
   for (size_t i = 0; i < results.size(); ++i)
     std::cout << b[i] << "  ";
   std::cout << std::endl;
-  std::cout << "El vector A * x = b es: \n";
+  std::cout << "El vector A * x(calculado) = b es: \n";
   for (size_t i = 0; i < results.size(); ++i)
     std::cout << br[i] << "  ";
   std::cout << std::endl;

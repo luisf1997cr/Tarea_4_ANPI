@@ -13,121 +13,141 @@
 
 #include "LUDoolittle.hpp"
 
-namespace anpi {
+namespace anpi
+{
 
-  /** faster method used for LU decomposition
+/** faster method used for LU decomposition
    */
-  template<typename T>
-  inline void lu(const anpi::Matrix<T>& A,
-                 anpi::Matrix<T> LU,
-                 std::vector<size_t>& p) {
-    anpi::luDoolittle(A,LU,p);
-  }
+template <typename T>
+inline void lu(const anpi::Matrix<T> &A,
+               anpi::Matrix<T> LU,
+               std::vector<size_t> &p)
+{
+  anpi::luDoolittle(A, LU, p);
+}
 
-  /** method used to create  the permutation matrix given a
+/** method used to create  the permutation matrix given a
    * permutation vector
   **/
-  template<typename T>
-  void permutationMatrix(const std::vector<size_t>&       p,
-                         anpi::Matrix<T>&           pMatrix) {
+template <typename T>
+void permutationMatrix(const std::vector<size_t> &p,
+                       anpi::Matrix<T> &pMatrix)
+{
 
-    int n = p.size();
-    anpi::Matrix<T> matrix(p.size(),p.size());
+  int n = p.size();
+  anpi::Matrix<T> matrix(p.size(), p.size());
 
-    for(int i = 0; i < n; i++) {
-      matrix[i][p[i]] = T(1);
-    }
-
-    pMatrix = matrix;
-
+  for (int i = 0; i < n; i++)
+  {
+    matrix[i][p[i]] = T(1);
   }
 
-  /// method used to solve lower triangular matrices
-  template<typename T>
-  void forwardSubstitution(const anpi::Matrix<T>& L,
-                           const std::vector<T>&  b,
-                           std::vector<T>&        y) {
+  pMatrix = matrix;
+}
 
-    int n = L.rows();
-    std::vector<T> x(n);
-    for(int i = 0; i < n; i++) {
-      x[i] =  T(1);
-    }
+/// method used to solve lower triangular matrices
+template <typename T>
+void forwardSubstitution(const anpi::Matrix<T> &L,
+                         const std::vector<T> &b,
+                         std::vector<T> &y)
+{
 
-    T sum;
-
-    for(int m = 0; m < n ; m++) {
-      sum = T(0);
-      for(int i = 0; i < m; i++) {
-        sum += L[m][i] * x[i];
-      }
-      x[m] =  (b[m] - sum)/L[m][m];
-    }
-
-    y = x;
-
+  int n = L.rows();
+  std::vector<T> x(n);
+  for (int i = 0; i < n; i++)
+  {
+    x[i] = T(1);
   }
 
-  /// method used to solve upper triangular matrices
-  template<typename T>
-  void backwardSubstitution(const anpi::Matrix<T>& U,
-                        const std::vector<T>&  y,
-                        std::vector<T>&        x) {
-    int n = U.rows();
+  T sum;
 
-    std::vector<T> w(n);
-    for(int i = 0; i < n; i++) {
-      w[i] =  T(1);
+  for (int m = 0; m < n; m++)
+  {
+    sum = T(0);
+    for (int i = 0; i < m; i++)
+    {
+      sum += L[m][i] * x[i];
     }
-
-    T sum;
-
-    w[n-1] = y[n-1] / U[n-1][n-1];
-
-    for(int i = (n-2); i >= 0; i--) {
-      sum = T(0);
-      for(int j = (n-1); j >= (i+1); j--) {
-        sum += U[i][j] * w[j];
-      }
-      w[i] = (y[i] - sum) / U[i][i];
-    }
-
-    x = w;
-
+    x[m] = (b[m] - sum) / L[m][m];
   }
 
-  template<typename T>
-  bool solveLU(const anpi::Matrix<T>& A,
-               std::vector<T>&        x,
-               const std::vector<T>&  b) {
+  y = x;
+}
 
-    anpi::Matrix<T> LU;
-    std::vector<size_t> p;
-    anpi::lu(A,LU,p);
+/// method used to solve upper triangular matrices
+template <typename T>
+void backwardSubstitution(const anpi::Matrix<T> &U,
+                          const std::vector<T> &y,
+                          std::vector<T> &x)
+{
+  int n = U.rows();
 
-    anpi::Matrix<T> L;
-    anpi::Matrix<T> U;
-    anpi::unpackDoolittle(LU,L,U);
-
-    anpi::Matrix<T> P;
-    anpi::permutationMatrix(p,P);
-
-    anpi::Matrix<T>PB = P * b; //ERRROR
-
-    std::vector<T> Pb(PB.rows());
-
-    for(int i = 0; i < PB.rows(); i++) {
-      Pb[i] = PB[i][0];
-    }
-
-    std::vector<T>y;
-    anpi::forwardSubstitution(L,Pb,y);
-
-    anpi::backwardSubstitution(U,y,x);
-
-    return 1;
+  std::vector<T> w(n);
+  for (int i = 0; i < n; i++)
+  {
+    w[i] = T(1);
   }
 
-}//anpi
+  T sum;
+
+  w[n - 1] = y[n - 1] / U[n - 1][n - 1];
+
+  for (int i = (n - 2); i >= 0; i--)
+  {
+    sum = T(0);
+    for (int j = (n - 1); j >= (i + 1); j--)
+    {
+      sum += U[i][j] * w[j];
+    }
+    w[i] = (y[i] - sum) / U[i][i];
+  }
+
+  x = w;
+}
+
+template <typename T>
+bool solveLU(const anpi::Matrix<T> &A,
+             std::vector<T> &x,
+             const std::vector<T> &b)
+{
+
+  anpi::Matrix<T> LU;
+  std::vector<size_t> p;
+  anpi::lu(A, LU, p);
+
+  anpi::Matrix<T> L;
+  anpi::Matrix<T> U;
+  anpi::unpackDoolittle(LU, L, U);
+
+  anpi::Matrix<T> P;
+  anpi::permutationMatrix(p, P);
+
+  // // anpi::Matrix<T>PB = P * b; //ERRROR
+
+  std::vector<T> Pb(P.rows());
+
+  // for (int i = 0; i < PB.rows(); i++)
+  // {
+  //   Pb[i] = PB[i][0];
+  // }
+  // x=b;
+  //we permute the b vector to match the permuted A matrix obtained from LU decomposition
+  for (int i = 0; i < P.rows(); ++i)
+  {
+    int ip = p[i]; //index in the permutation vector
+    T sum = b[ip]; //permuted result from b
+    Pb[ip] = b[i]; //move the current value to the permuted position
+    Pb[i] = sum;
+  }
+
+  std::vector<T> y;
+  anpi::forwardSubstitution(L, Pb, y);
+
+  anpi::backwardSubstitution(U, y, x);
+
+  return 1;
+}
+
+} // namespace anpi
 
 #endif

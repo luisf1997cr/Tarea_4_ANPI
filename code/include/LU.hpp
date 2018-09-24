@@ -40,26 +40,33 @@ bool solveLU(const anpi::Matrix<T> &A, std::vector<T> &x, std::vector<T> &b)
     //decompose A into LU
     anpi::lu(A, LU, p);
 
-    int i, ip, j;
+    int i, ii = 0, ip, j;
     T sum;
 
-    //we permute the b vector to match the permuted A
+    //we permute the b vector to match the permuted A matrix obtained from LU decomposition
     for (i = 0; i < n; ++i)
     {
         ip = p[i];    //index in the permutation vector
         sum = x[ip];  //permuted result from b
         x[ip] = x[i]; //move the current value to the permuted position
+        // x[i] = sum;
+        if (ii != 0)
+            for (j = ii - 1; j < i; j++)
+                sum -= LU[i][j] * x[j];
+        else if (sum != 0.0)
+            ii = i + 1;
+
         x[i] = sum;
     }
 
-    //forward substitution
-    for (i = 0; i < n; ++i)
-    {
-        sum = x[i] / LU[i][i];
-        for (j = 0; j <= i; ++j)
-            sum -= LU[i][j] * x[j];
-        x[i] = sum; //set the assigned
-    }
+    // //forward substitution
+    // for (i = 0; i < n; ++i)
+    // {
+    //     sum = x[i] / LU[i][i];
+    //     for (j = 0; j <= i; ++j)
+    //         sum -= LU[i][j] * x[j];
+    //     x[i] = sum; //set the assigned
+    // }
 
     // back substitution
     for (i = n - 1; i >= 0; --i)
