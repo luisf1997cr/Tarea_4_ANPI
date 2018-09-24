@@ -12,8 +12,8 @@
 
 #include "LUCrout.hpp"
 #include "LUDoolittle.hpp"
-// #include "Solver.hpp"
-#include "LU.hpp"
+#include "Solver.hpp"
+//#include "LU.hpp"
 #include "MatrixUtils.hpp"
 
 #include <iostream>
@@ -169,7 +169,7 @@ void invertTest()
   //simple test
   exAi = {{-0.375, 0.25}, {-1.25, 0.5}};
 
-  anpi::invert(A, Ai);
+  //anpi::invert(A, Ai);
 
   std::cout << "the matrix A is:\n";
   anpi::printMatrix(A);

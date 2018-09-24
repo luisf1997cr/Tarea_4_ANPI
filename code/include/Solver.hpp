@@ -10,7 +10,7 @@
 
 #ifndef ANPI_SOLVER_HPP
 #define ANPI_SOLVER_HPP
-
+#include <iostream>
 #include "LUDoolittle.hpp"
 
 namespace anpi
@@ -135,14 +135,11 @@ bool solveLU(const anpi::Matrix<T> &A,
   for (int i = 0; i < P.rows(); ++i)
   {
     int ip = p[i]; //index in the permutation vector
-    T sum = b[ip]; //permuted result from b
-    Pb[ip] = b[i]; //move the current value to the permuted position
-    Pb[i] = sum;
+    Pb[i] = b[ip]; //move the current value to the permuted position
   }
-
   std::vector<T> y;
   anpi::forwardSubstitution(L, Pb, y);
-
+  
   anpi::backwardSubstitution(U, y, x);
 
   return 1;
