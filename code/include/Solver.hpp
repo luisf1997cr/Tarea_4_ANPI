@@ -12,7 +12,9 @@
 #define ANPI_SOLVER_HPP
 #include <iostream>
 #include "LUDoolittle.hpp"
+#include "MatrixUtils.hpp"
 
+using namespace std;
 namespace anpi
 {
 
@@ -20,10 +22,10 @@ namespace anpi
    */
 template <typename T>
 inline void lu(const anpi::Matrix<T> &A,
-               anpi::Matrix<T> LU,
+               anpi::Matrix<T>& LU,
                std::vector<size_t> &p)
 {
-  anpi::luDoolittle(A, LU, p);
+  anpi::luC(A, LU, p);
 }
 
 /** method used to create  the permutation matrix given a
@@ -75,14 +77,15 @@ void forwardSubstitution(const anpi::Matrix<T> &L,
 }
 
 /// method used to solve upper triangular matrices
-template <typename T>
+template <typename T>//Aqui esta el error
 void backwardSubstitution(const anpi::Matrix<T> &U,
                           const std::vector<T> &y,
                           std::vector<T> &x)
 {
-  int n = U.rows();
+  int n = U.cols();
+  std::vector<T> w;
+  w.resize(n);
 
-  std::vector<T> w(n);
   for (int i = 0; i < n; i++)
   {
     w[i] = T(1);
@@ -106,11 +109,30 @@ void backwardSubstitution(const anpi::Matrix<T> &U,
 }
 
 template <typename T>
+void datosMatrix(anpi::Matrix<T> A){
+  cout << "Columnas de la matriz" << A.cols() << endl;
+  cout << "Filas de la Matriz" << A.rows() << endl;
+  cout << "Matriz completa" << endl;
+  int n = A.cols();
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < n; ++j)
+        {
+            std::cout << A[i][j] << "  ";
+        }
+        std::cout << std::endl;
+    }
+  cout<<"----------------------------------------"<<endl;
+}
+
+template <typename T>
 bool solveLU(const anpi::Matrix<T> &A,
              std::vector<T> &x,
              const std::vector<T> &b)
 {
-
+  cout << "Datos de la matriz A" << endl;
+  datosMatrix(A);
+  cout << "                    " << endl;
   anpi::Matrix<T> LU;
   std::vector<size_t> p;
   anpi::lu(A, LU, p);
@@ -121,9 +143,19 @@ bool solveLU(const anpi::Matrix<T> &A,
 
   anpi::Matrix<T> P;
   anpi::permutationMatrix(p, P);
-
   // // anpi::Matrix<T>PB = P * b; //ERRROR
-
+  cout << "Datos de la matriz A" << endl;
+  datosMatrix(A);
+  cout << "                    " << endl;
+  cout << "Datos de la matriz L" << endl;
+  datosMatrix(L);
+  cout << "                    " << endl;
+  cout << "Datos de la matriz U" << endl;
+  datosMatrix(U);
+  cout << "                    " << endl;
+  cout << "Datos de la matriz P" << endl;
+  datosMatrix(P);
+  cout << "                    " << endl;
   std::vector<T> Pb(P.rows());
 
   // for (int i = 0; i < PB.rows(); i++)
@@ -139,11 +171,11 @@ bool solveLU(const anpi::Matrix<T> &A,
   }
   std::vector<T> y;
   anpi::forwardSubstitution(L, Pb, y);
-  
   anpi::backwardSubstitution(U, y, x);
 
   return 1;
 }
+
 
 } // namespace anpi
 
